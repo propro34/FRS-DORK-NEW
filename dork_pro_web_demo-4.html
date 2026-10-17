@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DORK PRO — Dork Generator</title>
+<style>
+:root{--bg:#07090c;--panel:#0d1218;--panel2:#101821;--line:#263440;--red:#ff2435;--text:#edf3f8;--muted:#91a3b4;--blue:#80cfff}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at top,#171017 0,#07090c 55%);color:var(--text);font:14px/1.45 "Segoe UI",Tahoma,Arial,sans-serif}
+header{padding:18px 20px;border-bottom:1px solid #45212a;background:#090b0f;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:clamp(24px,4vw,36px);font-weight:900;letter-spacing:1px}.brand span{color:var(--red)} .sub{color:var(--muted);font-size:12px;letter-spacing:2px}
+main{max-width:1150px;margin:16px auto;padding:0 12px 28px;display:flex;flex-direction:column;gap:12px}
+.panel{border:1px solid #44202a;border-radius:12px;background:linear-gradient(145deg,#10151b,#090d12);box-shadow:0 0 0 1px #160e12 inset,0 8px 25px #0005;overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:11px 13px;border-bottom:1px solid var(--line);background:#111820}
+h2{font-size:16px;margin:0} h2 b{color:var(--red)} .actions{display:flex;gap:6px;flex-wrap:wrap}
+button,.filebtn{border:1px solid #354654;background:#131c25;color:var(--text);border-radius:7px;padding:8px 11px;cursor:pointer;font:inherit;transition:.15s}
+button:hover,.filebtn:hover{border-color:var(--red);background:#24141a}button.primary{background:var(--red);border-color:var(--red);font-weight:800;color:#fff}button.danger{color:#ff8c96}
+input,textarea,select{background:#080d12;color:var(--text);border:1px solid #31414f;border-radius:6px;padding:8px;font:inherit;min-width:0;width:100%;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 2px #ff243522}
+textarea{min-height:100px;resize:vertical;direction:ltr;text-align:left}
+.table-wrap{overflow-x:auto;padding:0 10px 10px}table{width:100%;border-collapse:collapse;min-width:460px}th,td{border-bottom:1px solid #1e2a34;padding:5px 7px;text-align:right}th{color:#b7c8d5;background:#0b1117;font-weight:600}td.num,th.num{width:38px;text-align:center;color:var(--muted)}td.check,th.check{width:42px;text-align:center}td.check input,th.check input{width:16px;height:16px;accent-color:var(--red)}td input{padding:6px 7px}
+.template-table{min-width:660px}.template-table td:last-child{color:var(--blue);direction:ltr;text-align:left;font-family:Consolas,monospace;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;padding:12px}
+.smallpanel{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#090e13}.smallpanel h3{font-size:14px;margin:0;padding:9px 10px;background:#111820;border-bottom:1px solid var(--line)}.smallpanel .table-wrap{padding-top:4px}
+.options{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:12px}.opt{display:flex;align-items:center;gap:8px}.opt input{width:17px;height:17px;accent-color:var(--red)}
+.generate{padding:14px;width:100%;font-size:17px}
+.results{direction:ltr;text-align:left;max-height:390px;overflow:auto;font:13px/1.55 Consolas,monospace;padding:10px;background:#070b0f;white-space:normal;overflow-wrap:anywhere}.result-row{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:3px 0;border-bottom:1px solid #15202a}.result-num{color:#ff6875;text-align:right;user-select:none}.result-query{direction:ltr;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;color:var(--text)}
+.status{padding:8px 13px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.note{color:var(--muted);font-size:12px;padding:0 13px 10px}.ltr{direction:ltr;text-align:left}.pill{border:1px solid #5b2831;color:#ff9aa3;border-radius:20px;padding:3px 9px;font-size:12px}
+@media(max-width:600px){header{padding:14px}.panel-head{align-items:flex-start}.panel-head .actions{width:100%}.panel-head button{flex:1}.grid{grid-template-columns:1fr}main{padding:0 8px 20px}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">DORK <span>PRO</span></div><div class="sub">DORK GENERATOR · EDIT · MIX · EXPORT</div></div>
+  <span class="pill">Local web demo · v1.0</span>
+</header>
+<main>
+<section class="panel">
+ <div class="panel-head"><h2>1. Keywords <b>(kw1)</b></h2><div class="actions"><label class="filebtn">📂 استيراد TXT<input id="keywordFile" type="file" accept=".txt,text/plain" hidden></label><button id="addKeyword">＋ إضافة سطر</button><button id="clearKeywords" class="danger">مسح</button></div></div>
+ <div class="table-wrap"><table id="keywordsTable"><thead><tr><th class="num">#</th><th>Keyword (كل كلمة في سطر)</th><th class="check">حذف</th></tr></thead><tbody></tbody></table></div>
+ <div class="note">خانة الكلمات فارغة عند البداية. اكتب الكلمات يدويًا أو استورد ملف TXT، كلمة واحدة في كل سطر.</div>
+</section>
+
+<section class="panel">
+ <div class="panel-head"><h2>2. Dork Type <b>(قوالب قابلة للتعديل)</b></h2><div class="actions"><button id="addTemplate">＋ قالب</button><button id="resetTemplates">إعادة الافتراضي</button></div></div>
+ <div class="table-wrap"><table id="templatesTable" class="template-table"><thead><tr><th class="num">#</th><th class="check">استخدام</th><th>Template (editable)</th><th>Preview</th><th>حذف</th></tr></thead><tbody></tbody></table></div>
+ <div class="note">المتغيرات: (dom)، (sf)، (kw1)، (pt)، (pr). عوامل البحث بلا نقطتين، والمعاملات مثل id وpage بلا علامة =.</div>
+</section>
+
+<div class="grid" style="padding:0">
+ <section class="smallpanel"><h3>3. Domains <b>(dom)</b> · قابلة للتعديل</h3><div class="panel-head"><div class="actions"><button data-add="domains">＋ إضافة</button><button data-select="domains">تحديد الكل</button></div></div><div class="table-wrap"><table id="domainsTable"><thead><tr><th class="num">#</th><th class="check">استخدام</th><th>Domain</th><th>حذف</th></tr></thead><tbody></tbody></table></div></section>
+ <section class="smallpanel"><h3>4. Search Focus <b>(sf)</b></h3><div class="panel-head"><div class="actions"><button data-add="focus">＋ إضافة</button><button data-select="focus">تحديد الكل</button></div></div><div class="table-wrap"><table id="focusTable"><thead><tr><th class="num">#</th><th class="check">استخدام</th><th>Search Focus</th><th>حذف</th></tr></thead><tbody></tbody></table></div></section>
+ <section class="smallpanel"><h3>5. Page Type <b>(pt)</b></h3><div class="panel-head"><div class="actions"><button data-add="pageTypes">＋ إضافة</button><button data-select="pageTypes">تحديد الكل</button></div></div><div class="table-wrap"><table id="pageTypesTable"><thead><tr><th class="num">#</th><th class="check">استخدام</th><th>Page Type</th><th>حذف</th></tr></thead><tbody></tbody></table></div></section>
+ <section class="smallpanel"><h3>6. Parameters <b>(pr)</b></h3><div class="panel-head"><div class="actions"><button data-add="params">＋ إضافة</button><button data-select="params">تحديد الكل</button></div></div><div class="table-wrap"><table id="paramsTable"><thead><tr><th class="num">#</th><th class="check">استخدام</th><th>Parameter</th><th>حذف</th></tr></thead><tbody></tbody></table></div></section>
+</div>
+
+<section class="panel">
+ <div class="panel-head"><h2>7. Options <b>(خيارات إضافية)</b></h2></div>
+ <div class="options">
+  <label class="opt"><input id="shuffle" type="checkbox"> خلط ترتيب النتائج عشوائيًا</label>
+  <label class="opt"><input id="dedupe" type="checkbox" checked> إزالة النتائج المكررة</label>
+  <label class="opt">الحد الأقصى <input id="maxResults" type="number" min="1" max="1000000" value="10000" style="width:110px"></label>
+ </div>
+</section>
+
+<button class="primary generate" id="generate">▶ إنشاء Dorks</button>
+
+<section class="panel">
+ <div class="panel-head"><h2>8. Generated Dorks <b>(النتائج)</b> <span class="pill" id="total">0</span></h2><div class="actions"><button id="copyAll">نسخ الكل</button><button id="export">⬇ تصدير TXT</button><button id="clearResults" class="danger">مسح النتائج</button></div></div>
+ <div id="results" class="results">النتائج ستظهر هنا بعد الضغط على «إنشاء Dorks».</div>
+ <div class="status"><span id="status">جاهز</span><span>يعمل محليًا داخل المتصفح ولا يرسل البيانات إلى خادم.</span></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const defaults={
+ domains:['.fr','.br','.kr','.us','.jp','.gb','.dz','.ru'],
+ focus:['inurl','intitle','intext'],
+ pageTypes:['.php?','.asp?','.aspx?'],
+ params:['id','page'],
+ templates:[
+  'site:(dom) (sf):(kw1) (pt)=(pr)',
+  '(sf):(kw1) (pt)=(pr) site:(dom)',
+  '(pt)=(pr) site:(dom) (sf):(kw1)',
+  '(sf):(kw1) site:(dom) (pt)=(pr)'
+ ]
+};
+let generated=[];
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function addRow(tbody,value='',checked=true,editable=true){
+ const tr=document.createElement('tr'), n=tbody.children.length+1;
+ tr.innerHTML=`<td class="num">${n}</td><td class="check"><input type="checkbox" ${checked?'checked':''} aria-label="استخدام"></td><td>${editable?`<input type="text" value="${escapeHtml(value)}" aria-label="قيمة">`:`<input type="text" value="${escapeHtml(value)}" aria-label="قالب">`}</td><td><button class="danger" type="button">✕</button></td>`;
+ tr.querySelector('button').addEventListener('click',()=>{tr.remove();renumber(tbody);});
+ tbody.appendChild(tr);return tr;
+}
+function renumber(tbody){[...tbody.rows].forEach((r,i)=>r.cells[0].textContent=i+1);}
+function fillList(id,values){const tb=$(id).querySelector('tbody');tb.innerHTML='';values.forEach(v=>addRow(tb,v,true));}
+function fillTemplates(values){const tb=$('templatesTable').querySelector('tbody');tb.innerHTML='';values.forEach((v,i)=>{
+ const tr=document.createElement('tr');tr.innerHTML=`<td class="num">${i+1}</td><td class="check"><input type="checkbox" checked></td><td><input class="template" value="${escapeHtml(v)}"></td><td class="preview"></td><td><button class="danger" type="button">✕</button></td>`;
+ tr.querySelector('button').onclick=()=>{tr.remove();renumber(tb);updatePreviews();};tr.querySelector('.template').addEventListener('input',updatePreviews);tb.appendChild(tr);
+ });updatePreviews();}
+function updatePreviews(){const sample={dom:'.us',sf:'inurl',kw1:'example',pt:'.php?',pr:'id'};[...$('templatesTable').querySelectorAll('tbody tr')].forEach(tr=>{let s=tr.querySelector('.template').value;for(const [k,v] of Object.entries(sample))s=s.replaceAll('('+k+')',v);tr.querySelector('.preview').textContent=s;});}
+function readList(id){return [...$(id).querySelectorAll('tbody tr')].map(tr=>({value:tr.querySelector('input[type=text]').value.trim(),checked:tr.querySelector('input[type=checkbox]').checked})).filter(x=>x.value&&x.checked).map(x=>x.value);}
+function readKeywords(){return [...$('keywordsTable').querySelectorAll('tbody tr input[type=text]')].map(x=>x.value.trim()).filter(Boolean);}
+function addKeywordRow(value=''){const tb=$('keywordsTable').querySelector('tbody');const tr=document.createElement('tr');tr.innerHTML=`<td class="num">${tb.children.length+1}</td><td><input type="text" value="${escapeHtml(value)}" placeholder="أدخل كلمة مفتاحية" dir="auto"></td><td class="check"><button type="button" class="danger">✕</button></td>`;tr.querySelector('button').onclick=()=>{tr.remove();renumber(tb)};tb.appendChild(tr);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+fillList('domainsTable',defaults.domains);fillList('focusTable',defaults.focus);fillList('pageTypesTable',defaults.pageTypes);fillList('paramsTable',defaults.params);fillTemplates(defaults.templates);addKeywordRow();
+$('addKeyword').onclick=()=>addKeywordRow();
+$('clearKeywords').onclick=()=>{$('keywordsTable').querySelector('tbody').innerHTML='';addKeywordRow();};
+$('keywordFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const text=await f.text();$('keywordsTable').querySelector('tbody').innerHTML='';text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(addKeywordRow);if(!$('keywordsTable').querySelector('tbody').children.length)addKeywordRow();$('status').textContent=`تم استيراد ${readKeywords().length} كلمة من ${f.name}`;e.target.value='';});
+document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{const id={domains:'domainsTable',focus:'focusTable',pageTypes:'pageTypesTable',params:'paramsTable'}[b.dataset.add];addRow($(id).querySelector('tbody'),'');});
+document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{const id={domains:'domainsTable',focus:'focusTable',pageTypes:'pageTypesTable',params:'paramsTable'}[b.dataset.select];const checks=[...$(id).querySelectorAll('tbody input[type=checkbox]')];const all=checks.every(c=>c.checked);checks.forEach(c=>c.checked=!all);b.textContent=all?'تحديد الكل':'إلغاء التحديد';});
+$('addTemplate').onclick=()=>{const tb=$('templatesTable').querySelector('tbody');const tr=document.createElement('tr');tr.innerHTML=`<td class="num">${tb.children.length+1}</td><td class="check"><input type="checkbox" checked></td><td><input class="template" value="site:(dom) (sf):(kw1) (pt)=(pr)"></td><td class="preview"></td><td><button class="danger" type="button">✕</button></td>`;tr.querySelector('button').onclick=()=>{tr.remove();renumber(tb);updatePreviews()};tr.querySelector('.template').oninput=updatePreviews;tb.appendChild(tr);updatePreviews();};
+$('resetTemplates').onclick=()=>fillTemplates(defaults.templates);
+$('generate').onclick=()=>{
+ const kws=readKeywords(),domains=readList('domainsTable'),focus=readList('focusTable'),pts=readList('pageTypesTable'),prs=readList('paramsTable');
+ const templates=[...$('templatesTable').querySelectorAll('tbody tr')].filter(tr=>tr.querySelector('input[type=checkbox]').checked).map(tr=>tr.querySelector('.template').value.trim()).filter(Boolean);
+ if(!kws.length){$('status').textContent='أدخل كلمة واحدة على الأقل أو استورد ملف TXT.';return;}
+ if(!domains.length||!focus.length||!pts.length||!prs.length||!templates.length){$('status').textContent='حدد عنصرًا واحدًا على الأقل في كل جدول مطلوب.';return;}
+ const cap=Math.max(1,Math.min(1000000,Number($('maxResults').value)||10000));let out=[];
+ outer: for(const kw of kws)for(const dom of domains)for(const sf of focus)for(const pt of pts)for(const pr of prs)for(const raw of templates){
+  let s=raw;const vals={dom,sf,kw1:kw,pt,pr};for(const [k,v] of Object.entries(vals))s=s.replaceAll('('+k+')',v);
+  if(/\((dom|sf|kw1|pt|pr)\)/.test(s))continue;
+  out.push(s.replace(/\s+/g,' ').trim());if(out.length>=cap)break outer;
+ }
+ if($('dedupe').checked)out=[...new Set(out)];
+ if($('shuffle').checked)shuffle(out);
+ generated=out;$('results').innerHTML=out.length?out.map((s,i)=>`<div class="result-row"><span class="result-num">${i+1}</span><code class="result-query">${escapeHtml(s)}</code></div>`).join(''):'لم يتم توليد نتائج. تحقق من القوالب والمتغيرات.';
+ $('total').textContent=out.length.toLocaleString();$('status').textContent=`اكتمل التوليد: ${out.length.toLocaleString()} نتيجة من ${kws.length} كلمة.`;
+};
+$('copyAll').onclick=async()=>{if(!generated.length){$('status').textContent='لا توجد نتائج لنسخها.';return;}try{await navigator.clipboard.writeText(generated.join('\n'));$('status').textContent='تم نسخ النتائج بدون أرقام الترتيب.';}catch{$('status').textContent='المتصفح منع النسخ التلقائي. استخدم التصدير TXT.';}};
+$('export').onclick=()=>{if(!generated.length){$('status').textContent='لا توجد نتائج للتصدير.';return;}const blob=new Blob([generated.join('\n')],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='dork-pro-results.txt';a.click();URL.revokeObjectURL(url);$('status').textContent='تم تجهيز ملف TXT.';};
+$('clearResults').onclick=()=>{generated=[];$('results').textContent='النتائج ستظهر هنا بعد الضغط على «إنشاء Dorks».';$('total').textContent='0';$('status').textContent='تم مسح النتائج.';};
+</script>
+</body>
+</html>
